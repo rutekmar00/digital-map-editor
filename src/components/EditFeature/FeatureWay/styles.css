@@ -1,0 +1,77 @@
+.feature-way {
+  background-color: #fdf8f4;
+  height: 100%;
+  padding: 10px 10px 0 10px;
+}
+
+.feature-way-type {
+  text-transform: capitalize;
+  color: grey;
+}
+
+.feature-way-type-span {
+  margin: 20px 0 20px 0;
+  padding: 15px 0 15px 0;
+  color: black;
+  width: 100%;
+  display: block;
+  text-align: center;
+  border-radius: 15px;
+  border: 2px solid #73ad21;
+}
+
+.feature-way-fields {
+  text-transform: capitalize;
+  color: grey;
+}
+
+.feature-way-field-name {
+  margin: 20px 0 20px 0;
+  color: black;
+  width: 100%;
+  display: block;
+  border-radius: 15px;
+  border: 2px solid #73ad21;
+}
+
+.feature-way-field-name > div > input {
+  width: 87%;
+  display: block;
+  margin: 10px auto;
+}
+
+.feature-way-field-name > div > select {
+  width: 87%;
+  display: block;
+  margin: 10px auto;
+}
+
+.feature-way-field-name-span {
+  display: inline-block;
+  width: 100%;
+  margin: 15px 0 15px 10px;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.feature-way-field-id {
+  margin: 20px 0 20px 0;
+  color: black;
+  width: 100%;
+  display: block;
+  border-radius: 15px;
+  border: 2px solid #73ad21;
+}
+
+.feature-way-field-id > div > input {
+  margin: 15px 0 15px 10px;
+  width: 87%;
+}
+
+.feature-way-field-id-span {
+  display: inline-block;
+  margin: 15px 0 15px 10px;
+  width: 100%;
+  font-weight: bold;
+  font-size: 20px;
+}
