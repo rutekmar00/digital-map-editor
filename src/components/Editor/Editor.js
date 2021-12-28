@@ -9,7 +9,13 @@ export default function Editor() {
 
   return (
     <div style={{ width: "100%", display: "flex" }}>
-      {showFeature ? <EditFeature /> : null}
+      {showFeature ? (
+        <EditFeature
+          svgElement={svgElementData}
+          globalData={jsonData}
+          setGlobalData={setJsonData}
+        />
+      ) : null}
       <Map
         onShowFeature={setShowFeature}
         inspectBoolean={showFeature}
