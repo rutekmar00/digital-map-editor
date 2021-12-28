@@ -43,10 +43,15 @@ class Map extends React.Component {
     this.moveElement = this.moveElement.bind(this);
   }
   componentDidMount() {
-    this.setState({
-      isLoadedJson: true,
-      svgJsonData: MapJSON.default,
-    });
+    this.setState(
+      {
+        isLoadedJson: true,
+        svgJsonData: MapJSON.default,
+      },
+      () => {
+        this.props.getJSONFromChild(this.state.svgJsonData);
+      }
+    );
   }
 
   getSVG() {
@@ -390,6 +395,22 @@ class Map extends React.Component {
         element = this.createPointBlinking(point, svgImage, "draggable");
         elements.push(element);
       }
+      this.setState(
+        {
+          svgElement: current,
+        },
+        () => {
+          const elementId = current.classList.item(3).slice(1);
+          const target = this.state.svgJsonData.features.find((record) =>
+            record.id.includes(elementId)
+          );
+          if (target != null) {
+            this.props.getDataFromChild(
+              Object.assign(target, { type: "building" })
+            );
+          }
+        }
+      );
       return;
     } else if (current.classList.contains("tag-highway")) {
       let parent = svgImage.children[6];
@@ -405,12 +426,36 @@ class Map extends React.Component {
         point["y"] = divided[i].split(",")[1];
         this.createPointBlinking(point, svgImage, "draggable");
       }
+      this.setState(
+        {
+          svgElement: current,
+        },
+        () => {
+          const elementId = current.classList.item(3).slice(1);
+          const target = this.state.svgJsonData.features.find((record) =>
+            record.id.includes(elementId)
+          );
+          if (target != null) {
+            this.props.getDataFromChild(Object.assign(target, { type: "way" }));
+          }
+        }
+      );
     } else if (current.classList.contains("created-point")) {
       let parent = svgImage.children[6];
       while (parent.firstChild) {
         parent.firstChild.remove();
       }
       current.classList.add("created-point-blinking-border");
+      this.setState(
+        {
+          svgElement: current,
+        },
+        () => {
+          this.props.getDataFromChild(
+            Object.assign(current, { type: "created-point" })
+          );
+        }
+      );
     } else if (current.classList.contains("created-line")) {
       let parent = svgImage.children[6];
       while (parent.firstChild) {
@@ -425,6 +470,76 @@ class Map extends React.Component {
         point["y"] = divided[i].split(",")[1];
         this.createPointBlinking(point, svgImage, "draggable");
       }
+      this.setState(
+        {
+          svgElement: current,
+        },
+        () => {
+          const elementId = current.classList[1];
+          const target = this.state.svgJsonData.features.findIndex((record) =>
+            record.id.includes(elementId)
+          );
+          if (target === -1) {
+            let idOfCreatedLine = current.classList[1];
+            let targetData = {
+              type: "Feature",
+              id: `created/${idOfCreatedLine}`,
+              properties: {
+                name: "Common name (not set)",
+                id: `created/${idOfCreatedLine}`,
+                speedlimit: "undetermined",
+                highway: "created",
+              },
+            };
+            this.props.getDataFromChild(
+              Object.assign(targetData, { type: "created-line" })
+            );
+            return;
+          }
+          if (target != null) {
+            let jsonDataOfElement = this.state.svgJsonData.features[target];
+            let current = this.state.svgElement;
+            if (
+              jsonDataOfElement.properties.highway === "track" &&
+              jsonDataOfElement.properties.surface === "unpaved"
+            ) {
+              current.classList.add(
+                "way",
+                "line",
+                "stroke",
+                "tag-highway",
+                "tag-highway-track",
+                "tag-unpaved"
+              );
+              let current1 = current.cloneNode(true);
+              let current2 = current.cloneNode(true);
+              current1.classList.add(
+                "casing",
+                "tag-highway",
+                "tag-highway-track",
+                "tag-unpaved"
+              );
+              current1.style.stroke = "#c5b59f";
+              current2.classList.add(
+                "shadow",
+                "tag-highway",
+                "tag-highway-track",
+                "tag-unpaved"
+              );
+              current.classList.remove("created-line-blinking-border");
+              current1.classList.remove("created-line-blinking-border");
+              current2.classList.remove("created-line-blinking-border");
+              svgImage.children[5].appendChild(current1);
+              svgImage.children[5].appendChild(current2);
+            }
+            this.props.getDataFromChild(
+              Object.assign(this.state.svgJsonData.features[target], {
+                type: "way",
+              })
+            );
+          }
+        }
+      );
     } else if (current.classList.contains("created-area")) {
       let parent = svgImage.children[6];
       while (parent.firstChild) {
@@ -439,11 +554,53 @@ class Map extends React.Component {
         point["y"] = divided[i].split(",")[1];
         this.createPointBlinking(point, svgImage, "draggable");
       }
+      this.setState(
+        {
+          svgElement: current,
+        },
+        () => {
+          const elementId = current.classList[1];
+          const target = this.state.svgJsonData.features.findIndex((record) =>
+            record.id.includes(elementId)
+          );
+          if (target === -1) {
+            let idOfCreatedArea = current.classList[1];
+            let targetData = {
+              type: "Created Area",
+              id: `created/${idOfCreatedArea}`,
+              properties: {
+                name: "Common name (not set)",
+                id: `created/${idOfCreatedArea}`,
+              },
+            };
+            this.props.getDataFromChild(
+              Object.assign(targetData, { type: "created-area" })
+            );
+            return;
+          }
+          if (target != null) {
+            this.props.getDataFromChild(
+              Object.assign(this.state.svgJsonData.features[target], {
+                type: "created-area",
+              })
+            );
+          }
+        }
+      );
     } else {
       let parent = svgImage.children[6];
       while (parent.firstChild) {
         parent.firstChild.remove();
       }
+      this.setState(
+        {
+          svgElement: null,
+          selectedTargetToMove: false,
+        },
+        () => {
+          this.props.getDataFromChild({ type: "empty" });
+        }
+      );
     }
   };
 
@@ -503,6 +660,10 @@ class Map extends React.Component {
       )[1];
       secondElementToUpdate.setAttribute("d", stringToUpdatePath);
     }
+  }
+
+  inspectFeature(passedValue) {
+    this.props.onShowFeature(passedValue);
   }
 
   createPoint(point, svgImage) {
@@ -631,14 +792,59 @@ class Map extends React.Component {
       elemPoint.classList.add("button-clicked");
       elemLine.disabled = true;
       elemArea.disabled = true;
+      this.setState(
+        {
+          createPointBool: true,
+        },
+        () => {
+          this.props.getDataFromChild(
+            Object.assign(
+              {
+                info: "Creating point is selected",
+              },
+              { type: "editor-point" }
+            )
+          );
+        }
+      );
     } else if (buttonState === true && element === "line") {
       elemLine.classList.add("button-clicked");
       elemPoint.disabled = true;
       elemArea.disabled = true;
+      this.setState(
+        {
+          createLineBool: true,
+        },
+        () => {
+          this.props.getDataFromChild(
+            Object.assign(
+              {
+                info: "Creating line is selected",
+              },
+              { type: "editor-line" }
+            )
+          );
+        }
+      );
     } else if (buttonState === true && element === "area") {
       elemArea.classList.add("button-clicked");
       elemLine.disabled = true;
       elemPoint.disabled = true;
+      this.setState(
+        {
+          createAreaBool: true,
+        },
+        () => {
+          this.props.getDataFromChild(
+            Object.assign(
+              {
+                info: "Creating area is selected",
+              },
+              { type: "editor-area" }
+            )
+          );
+        }
+      );
     } else {
       elemPoint.disabled = false;
       elemLine.disabled = false;
@@ -646,6 +852,18 @@ class Map extends React.Component {
       elemPoint.classList.remove("button-clicked");
       elemLine.classList.remove("button-clicked");
       elemArea.classList.remove("button-clicked");
+      let numberForLineData = this.state.createLineData.id + 1;
+      this.setState(
+        {
+          createPointBool: false,
+          createLineBool: false,
+          createAreaBool: false,
+          createLineData: { id: numberForLineData, isFirst: false },
+        },
+        () => {
+          this.props.getDataFromChild({ type: "empty" });
+        }
+      );
     }
   }
 
@@ -667,7 +885,13 @@ class Map extends React.Component {
           <div style={{ position: "relative" }}>
             <div className={"navbar"}>
               <div className={"button-left"}>
-                <button>Inspect</button>
+                <button
+                  onClick={() =>
+                    this.inspectFeature(!this.props.inspectBoolean)
+                  }
+                >
+                  Inspect
+                </button>
               </div>
               <div className={"button-center"}>
                 <button
