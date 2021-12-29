@@ -1,0 +1,47 @@
+.container {
+  height: 100%;
+  text-align: center;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar {
+  position: absolute;
+  width: 100%;
+  min-height: 50px;
+  background-color: rgba(123, 130, 130, 0.4);
+  display: flex;
+  justify-content: space-between;
+  pointer-events: all;
+  z-index: 999;
+}
+
+.navbar button {
+  background-color: aqua;
+  height: 100%;
+  min-width: 100px;
+}
+
+@media only screen and (max-width: 1000px) {
+  .navbar button {
+    min-width: 50px;
+  }
+}
+
+.navbar button:hover {
+  opacity: 0.75;
+}
+
+.navbar button:disabled {
+  background-color: grey;
+  color: wheat;
+}
+
+.create-point.button-clicked,
+.create-line.button-clicked,
+.create-area.button-clicked {
+  background-color: red;
+  color: black;
+  font-weight: bold;
+}

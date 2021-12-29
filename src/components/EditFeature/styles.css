@@ -1,0 +1,31 @@
+.edit-feature {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  background-color: #faf0e6;
+  border: solid 1px;
+  border-top: none;
+  max-height: 895px;
+  overflow: scroll;
+  scrollbar-width: none;
+}
+
+.edit-feature::-webkit-scrollbar {
+  display: none;
+}
+
+.edit-feature > p {
+  font-size: xx-large;
+  text-align: center;
+}
+
+@media only screen and (max-width: 1000px) {
+  .edit-feature {
+    width: 90%;
+    font-size: 15px;
+  }
+
+  .edit-feature > p {
+    font-size: x-large;
+  }
+}
