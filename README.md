@@ -29,7 +29,6 @@ The application allows a user to perform actions specified below.
 ## Screenshots
 
 ![Main page view](./preview-images/screen-main.png)
-![Profile view (add post)](./preview-images/screen-profile-addpost.png)
 
 ## Setup
 
